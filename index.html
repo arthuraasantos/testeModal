@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Modal Angular</title>
+    <link href="bower_components\bootstrap\dist\css\bootstrap.css" style="text/css" rel="stylesheet">    
+    <script src="bower_components\angular\angular.min.js"></script>
+    <script src="bower_components\angular-bootstrap\ui-bootstrap.min.js"></script>
+    <script src="bower_components\angular-bootstrap\ui-bootstrap-tpls.min.js"></script>
+</head>
+
+<body ng-app="modalApp">
+    <div ng-controller="defaultCtrl">
+    <h2>{{ mensagem }}</h2>
+    <button type="button" class="btn btn-default" ng-click="open()">Open modal!</button>
+    <script type="text/ng-template" id="meumodal.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">I'm a modal!</h3>
+        </div>
+        <div class="modal-body" id="modal-body">
+            
+            <h2>Texto modal</h2>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+        </div>
+    </script>
+    </div>
+
+</body>
+
+<script>
+    var app = angular.module('modalApp',['ui.bootstrap']);
+
+    app.controller('defaultCtrl',function($scope, $uibModal, $log){
+        $scope.mensagem = "teste";
+        var $ctrl = this;
+        $ctrl.items = ['item1', 'item2', 'item3'];
+
+        $scope.open = function (size) {
+            
+            var modalInstance = 
+
+            $uibModal.open({
+            animation: false,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'meumodal.html',
+            controller: 'ModalInstanceCtrl',
+            size: size,
+            resolve: {
+                items: function () {
+                return $ctrl.items;
+                }
+            },
+            close: {
+
+            }
+            });
+
+            modalInstance.result.then(function () {
+            $ctrl.selected = selectedItem;
+            }, function () {
+            $log.info('Modal dismissed at: ' + new Date());
+            });
+        };
+
+        $ctrl.test = function(){
+             var dd = 1  + 1;
+        };
+        $ctrl.openComponentModal = function () {
+            var modalInstance = $uibModal.open({
+            animation: $ctrl.animationsEnabled,
+            component: 'modalComponent',
+            resolve: {
+                items: function () {
+                return $ctrl.items;
+                }
+            }
+            });
+
+            modalInstance.result.then(function (selectedItem) {
+            $ctrl.selected = selectedItem;
+            }, function () {
+            $log.info('modal-component dismissed at: ' + new Date());
+            });
+        };
+        
+    });
+
+app.controller('ModalInstanceCtrl', function ($uibModalInstance, items) {
+  var $ctrl = this;
+  $ctrl.items = items;
+  $ctrl.selected = {
+    item: $ctrl.items[0]
+  };
+
+  $ctrl.test = function(){
+             var dd = 1  + 1;
+  };
+
+//   $ctrl.ok = function () {
+//     $ctrl.items.push('item 4'); 
+//     $uibModalInstance.close($ctrl.items);
+//   };
+
+//   $ctrl.cancel = function () {
+//     $uibModalInstance.dismiss('cancel');
+//   };
+});
+
+angular.module('ui.bootstrap').component('modalComponent', {
+  templateUrl: 'meumodal.html',
+  bindings: {
+    resolve: '<',
+    close: '&',
+    dismiss: '&'
+  },
+  controller: function () {
+    var $ctrl = this;
+
+    $ctrl.$onInit = function () {
+      $ctrl.items = $ctrl.resolve.items;
+      $ctrl.selected = {
+        item: $ctrl.items[0]
+      };
+    };
+
+    $ctrl.ok = function () {
+      $ctrl.close({$value: $ctrl.selected.item});
+    };
+
+    $ctrl.cancel = function () {
+      $ctrl.dismiss({$value: 'cancel'});
+    };
+  }
+});
+
+</script>
+<html>
