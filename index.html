@@ -12,6 +12,7 @@
 <body ng-app="modalApp">
     <div ng-controller="defaultCtrl">
     <h2>{{ mensagem }}</h2>
+    <pre>{{ items || json}}</pre>
     <button type="button" class="btn btn-default" ng-click="open()">Open modal!</button>
     <script type="text/ng-template" id="meumodal.html">
         <div class="modal-header">
@@ -20,12 +21,13 @@
         <div class="modal-body" id="modal-body">
             
             <h2>Texto modal</h2>
-
+             {{ mensagem  }}
+             {{ items }}       
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+            <button class="btn btn-primary" type="button" ng-click="cadastrar()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
         </div>
     </script>
     </div>
@@ -38,7 +40,7 @@
     app.controller('defaultCtrl',function($scope, $uibModal, $log){
         $scope.mensagem = "teste";
         var $ctrl = this;
-        $ctrl.items = ['item1', 'item2', 'item3'];
+        $scope.items = ['item1', 'item2', 'item3'];
 
         $scope.open = function (size) {
             
@@ -53,7 +55,7 @@
             size: size,
             resolve: {
                 items: function () {
-                return $ctrl.items;
+                return $scope.items;
                 }
             },
             close: {
@@ -62,15 +64,11 @@
             });
 
             modalInstance.result.then(function () {
-            $ctrl.selected = selectedItem;
             }, function () {
             $log.info('Modal dismissed at: ' + new Date());
             });
         };
 
-        $ctrl.test = function(){
-             var dd = 1  + 1;
-        };
         $ctrl.openComponentModal = function () {
             var modalInstance = $uibModal.open({
             animation: $ctrl.animationsEnabled,
@@ -91,53 +89,21 @@
         
     });
 
-app.controller('ModalInstanceCtrl', function ($uibModalInstance, items) {
-  var $ctrl = this;
-  $ctrl.items = items;
-  $ctrl.selected = {
-    item: $ctrl.items[0]
+app.controller('ModalInstanceCtrl', function ($uibModalInstance, items, $scope) {
+  $scope.items = items;
+
+
+  $scope.cadastrar = function () {
+    $scope.items.push('item 4'); 
+    $uibModalInstance.close();
   };
 
-  $ctrl.test = function(){
-             var dd = 1  + 1;
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
   };
-
-//   $ctrl.ok = function () {
-//     $ctrl.items.push('item 4'); 
-//     $uibModalInstance.close($ctrl.items);
-//   };
-
-//   $ctrl.cancel = function () {
-//     $uibModalInstance.dismiss('cancel');
-//   };
 });
 
-angular.module('ui.bootstrap').component('modalComponent', {
-  templateUrl: 'meumodal.html',
-  bindings: {
-    resolve: '<',
-    close: '&',
-    dismiss: '&'
-  },
-  controller: function () {
-    var $ctrl = this;
 
-    $ctrl.$onInit = function () {
-      $ctrl.items = $ctrl.resolve.items;
-      $ctrl.selected = {
-        item: $ctrl.items[0]
-      };
-    };
-
-    $ctrl.ok = function () {
-      $ctrl.close({$value: $ctrl.selected.item});
-    };
-
-    $ctrl.cancel = function () {
-      $ctrl.dismiss({$value: 'cancel'});
-    };
-  }
-});
 
 </script>
 <html>
