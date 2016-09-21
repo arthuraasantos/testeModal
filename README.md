@@ -1,2 +1,2 @@
 # testeModal
-modal teste
+Exemplo usando AngularJs + Diretiva 'Modal' do  Angular UI Bootstrap
